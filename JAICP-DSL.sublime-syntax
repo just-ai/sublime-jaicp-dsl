@@ -1,0 +1,292 @@
+%YAML 1.2
+---
+name: JAICP DSL
+file_extensions:
+  - sc
+scope: source.zb
+
+variables:
+  catchall: '(?=^\s*(?:a|buttons|eg?!?|else|elseif|event!?|go!?|image|if|init|inlineButtons|intent!?|newSession|patterns|q!?|random|require|script|state|theme|timeout):)'
+  named_pattern: '([@$][\w\.]+)(?:(::)(\w+))?'
+
+contexts:
+  prototype:
+    - include: comment
+
+  main:
+    # Declarative tags
+    - include: require
+    - include: patterns
+    - include: init
+    - include: state
+    - include: question
+    - match: '\b(eg?!?|intent!?):'
+      scope: storage.type.zb
+    - match: '\b(else):'
+      scope: variable.parameter.zb
+
+    # Reaction tags
+    - include: script
+    - include: condition
+    - include: reaction
+    - include: buttons
+    - include: inlineButtons
+    - include: newSession
+    - match: '\b(image|random|timeout):'
+      scope: variable.parameter.zb
+
+  require:
+    - match: '\brequire:'
+      scope: keyword.zb
+      push:
+        - include: template
+        - include: param
+      with_prototype:
+        - include: catchall
+
+  patterns:
+    - match: '\bpatterns:'
+      scope: keyword.zb
+      push:
+        # No catchall here (already included into prototype)
+        - match: '\|\|'
+          scope: keyword.other.zb
+          embed: scope:source.js
+          escape: '(?=^\s*({{named_pattern}}|\#))'
+
+        - match: '='
+          scope: keyword.operator.assignment.zb
+
+        - include: pattern
+
+      with_prototype:
+        - include: catchall
+
+  init:
+    - match: '\binit:'
+      scope: keyword.zb
+      embed: scope:source.js
+      escape: '{{catchall}}|(?=^\s*\#)'
+
+  state:
+    - match: '\b(theme|state):'
+      scope: keyword.zb
+      push:
+        - match: '\|\|'
+          scope: keyword.other.zb
+          push: param
+      with_prototype:
+        - include: catchall
+
+  question:
+    - match: '\b(q|event)!?:'
+      scope: storage.type.zb
+      push:
+        - match: '\|\|'
+          scope: keyword.other.zb
+          push: param
+
+        - include: pattern
+
+      with_prototype:
+        - include: catchall
+
+  script:
+    - match: '\bscript:'
+      scope: variable.parameter.zb
+      embed: scope:source.js
+      escape: '{{catchall}}|(?=^\s*\#)'
+
+  condition:
+    - match: '\b(if|elseif):'
+      scope: variable.parameter.zb
+      embed: scope:source.js#expression
+      escape: '{{catchall}}'
+
+  reaction:
+    - match: '\b(a|go!?):'
+      scope: variable.parameter.zb
+      push:
+        # Tempting, but what if an actual comment immediately follows?
+        # - meta_include_prototype: false
+        - include: template
+        - match: '\|\|'
+          scope: keyword.other.zb
+          push: param
+      with_prototype:
+        - include: catchall
+
+  buttons:
+    - match: '\bbuttons:'
+      scope: variable.parameter.zb
+      push:
+        # This is because `object-literal` sets instead of pushing
+        - match: ''
+          push:
+            - include: scope:source.js#object-literal
+            - include: string
+            - match: '(?: (->) (.+))?'
+              captures:
+                1: keyword.operator.zb
+                2: string.other.zb
+      with_prototype:
+        - include: catchall
+
+  inlineButtons:
+    - match: '\binlineButtons:'
+      scope: variable.parameter.zb
+      push:
+        - match: ''
+          push:
+            - include: scope:source.js#object-literal
+      with_prototype:
+        - include: catchall
+
+  newSession:
+    - match: '\bnewSession:'
+      scope: variable.parameter.zb
+      push:
+        - match: ''
+          push:
+            - include: scope:source.js#object-literal
+            - include: param
+      with_prototype:
+        - include: catchall
+
+  pattern:
+    - include: special-pattern
+    - match: '{{named_pattern}}'
+      captures:
+        1: entity.name.class.zb
+        2: keyword.control.alias.zb
+        3: entity.name.class.zb
+    - include: pattern-element
+
+  special-pattern:
+    - match: '(\$repeat)(<)'
+      captures:
+        1: entity.name.constant.zb
+        2: punctuation.section.brackets.begin.zb
+      push:
+        - include: pattern
+        - match: '>'
+          scope: punctuation.section.brackets.end.zb
+          pop: true
+
+    - match: '(\$regexp)(<)'
+      captures:
+        1: entity.name.constant.zb
+        2: punctuation.section.brackets.begin.zb
+      embed: scope:source.regexp
+      escape: '>'
+      escape_captures:
+        0: punctuation.section.brackets.end.zb
+
+    - match: '(\$weight)(<)'
+      captures:
+        1: entity.name.constant.zb
+        2: punctuation.section.braces.begin.zb
+      push:
+        - match: '(\d+(?:\.\d+)?)?([+-])?(\d+(?:\.\d+)?)'
+          captures:
+            1: constant.numeric.float.zb
+            2: keyword.operator.arithmetic.zb
+            3: constant.numeric.float.zb
+        - match: '[^>]'
+          scope: invalid.illegal.zb
+        - match: '>'
+          scope: punctuation.section.brackets.end.zb
+          pop: true
+
+    - match: '(\$entity|\$morph)(<)(.*?)(>)'
+      captures:
+        1: entity.name.constant.zb
+        2: punctuation.section.brackets.begin.zb
+        3: string.other.zb
+        4: punctuation.section.brackets.end.zb
+
+    - match: '\$oneWord|\$nonEmptyGarbage'
+      scope: entity.name.constant.zb
+
+  pattern-element:
+    - match: '\('
+      scope: keyword.control.group.zb
+      push:
+        # This context has higher priority than the invalid one
+        - match: '\)'
+          scope: keyword.control.group.zb
+          pop: true
+        - include: pattern
+
+    # Hate to be repetitive, but otherwise different braces match each other
+    - match: '\['
+      scope: keyword.control.optional-group.zb
+      push:
+        - match: '\]'
+          scope: keyword.control.optional-group.zb
+          pop: true
+        - include: pattern
+
+    - match: '\{'
+      scope: keyword.control.permutation.zb
+      push:
+        - match: '\}'
+          scope: keyword.control.permutation.zb
+          pop: true
+        - include: pattern
+
+    - match: '[\)\]\}]'
+      scope: invalid.illegal.unmatched-brace.zb
+    - match: '(?<=\w)\*(?=\w)'
+      scope: invalid.illegal.inline-sequence.zb
+    - match: '(?<=[\(\[\{])[\|/]|[\|/](?=[\|/\)\]\}])'
+      scope: invalid.illegal.empty-alternant.zb
+
+    - match: '[\|/]'
+      scope: keyword.operator.alternation.zb
+    - match: '~'
+      scope: keyword.control.lemma.zb
+    - match: '\*'
+      scope: keyword.control.sequence.zb
+    - match: ':'
+      scope: keyword.control.mapping.zb
+
+  param:
+    - match: '(\w+)\s*(=)\s*'
+      captures:
+        1: entity.other.inherited-class.zb
+        2: keyword.operator.assignment.zb
+      push:
+        - include: template
+        - include: value
+        - match: '(?=[\n,])'
+          pop: true
+
+    - match: ','
+      scope: keyword.other.zb
+
+  template:
+    - match: '{{'
+      scope: constant.character.zb
+      embed: scope:source.js#expression
+      embed_scope: constant.character.zb
+      escape: '}}'
+      escape_captures:
+        0: constant.character.zb
+
+  value:
+    - include: scope:source.js#constants
+    - include: scope:source.js#literal-string
+    - include: scope:source.js#object-literal
+
+  comment:
+    - match: '\#'
+      scope: punctuation.definition.comment.zb
+      push:
+        - meta_scope: comment.line.number-sign.zb
+        - match: '$\n?'
+          pop: true
+
+  catchall:
+    - match: '{{catchall}}'
+      pop: true
