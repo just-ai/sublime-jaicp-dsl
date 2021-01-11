@@ -7,9 +7,14 @@
 - Поддержка всех употребительных тегов JAICP DSL.
 - Подсветка и частичная валидация элементов паттернов.
 - Подсветка скриптовых вставок на JS при помощи встроенной подсветки.
-- Комментирование кода через комбинацию клавиш `Ctrl + /`.
+- Комментирование кода через комбинацию клавиш `Ctrl` + `/`.
 
-[Sublime Text 3]: https://www.sublimetext.com
+## Установка
+
+1. Установите [Package Control].
+2. Запустите редактор и откройте панель инструментов сочетанием `Ctrl` + `Shift` + `P`.
+3. Выберите **Package Control: Add Repository** и введите адрес данного репозитория.
+4. В панели инструментов выберите **Package Control: Install Package** и установите `sublime-jaicp-dsl`.
 
 ---
 
@@ -20,4 +25,14 @@ Compared to the highlighter in the built-in editor, it features:
 - Support for all commonly used JAICP DSL tags.
 - Highlighting and partial validation of pattern elements.
 - Embedding of the native JS syntax definition to highlight inline JS code.
-- Smart hotkeyed commenting via `Ctrl + /`.
+- Smart hotkeyed commenting via `Ctrl` + `/`.
+
+## Installation
+
+1. Install [Package Control].
+2. In Sublime Text, open the command prompt via `Ctrl` + `Shift` + `P`.
+3. Select **Package Control: Add Repository** and enter this repository’s URL.
+4. From the command prompt, select **Package Control: Install Package** and install `sublime-jaicp-dsl`.
+
+[Sublime Text 3]: https://www.sublimetext.com
+[Package Control]: https://packagecontrol.io
