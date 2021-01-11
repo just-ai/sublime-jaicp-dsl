@@ -3,7 +3,7 @@
 name: JAICP DSL
 file_extensions:
   - sc
-scope: source.zb
+scope: source.jaicp
 
 variables:
   catchall: '(?=^\s*(?:a|buttons|eg?!?|else|elseif|event!?|go!?|image|if|init|inlineButtons|intent!?|newSession|patterns|q!?|random|require|script|state|theme|timeout):)'
@@ -21,9 +21,9 @@ contexts:
     - include: state
     - include: question
     - match: '\b(eg?!?|intent!?):'
-      scope: storage.type.zb
+      scope: storage.type.jaicp
     - match: '\b(else):'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
 
     # Reaction tags
     - include: script
@@ -33,11 +33,11 @@ contexts:
     - include: inlineButtons
     - include: newSession
     - match: '\b(image|random|timeout):'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
 
   require:
     - match: '\brequire:'
-      scope: keyword.zb
+      scope: keyword.jaicp
       push:
         - include: template
         - include: param
@@ -46,16 +46,16 @@ contexts:
 
   patterns:
     - match: '\bpatterns:'
-      scope: keyword.zb
+      scope: keyword.jaicp
       push:
         # No catchall here (already included into prototype)
         - match: '\|\|'
-          scope: keyword.other.zb
+          scope: keyword.other.jaicp
           embed: scope:source.js
           escape: '(?=^\s*({{named_pattern}}|\#))'
 
         - match: '='
-          scope: keyword.operator.assignment.zb
+          scope: keyword.operator.assignment.jaicp
 
         - include: pattern
 
@@ -64,26 +64,26 @@ contexts:
 
   init:
     - match: '\binit:'
-      scope: keyword.zb
+      scope: keyword.jaicp
       embed: scope:source.js
       escape: '{{catchall}}|(?=^\s*\#)'
 
   state:
     - match: '\b(theme|state):'
-      scope: keyword.zb
+      scope: keyword.jaicp
       push:
         - match: '\|\|'
-          scope: keyword.other.zb
+          scope: keyword.other.jaicp
           push: param
       with_prototype:
         - include: catchall
 
   question:
     - match: '\b(q|event)!?:'
-      scope: storage.type.zb
+      scope: storage.type.jaicp
       push:
         - match: '\|\|'
-          scope: keyword.other.zb
+          scope: keyword.other.jaicp
           push: param
 
         - include: pattern
@@ -93,32 +93,32 @@ contexts:
 
   script:
     - match: '\bscript:'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       embed: scope:source.js
       escape: '{{catchall}}|(?=^\s*\#)'
 
   condition:
     - match: '\b(if|elseif):'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       embed: scope:source.js#expression
       escape: '{{catchall}}'
 
   reaction:
     - match: '\b(a|go!?):'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       push:
         # Tempting, but what if an actual comment immediately follows?
         # - meta_include_prototype: false
         - include: template
         - match: '\|\|'
-          scope: keyword.other.zb
+          scope: keyword.other.jaicp
           push: param
       with_prototype:
         - include: catchall
 
   buttons:
     - match: '\bbuttons:'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       push:
         # This is because `object-literal` sets instead of pushing
         - match: ''
@@ -127,14 +127,14 @@ contexts:
             - include: string
             - match: '(?: (->) (.+))?'
               captures:
-                1: keyword.operator.zb
-                2: string.other.zb
+                1: keyword.operator.jaicp
+                2: string.other.jaicp
       with_prototype:
         - include: catchall
 
   inlineButtons:
     - match: '\binlineButtons:'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       push:
         - match: ''
           push:
@@ -144,7 +144,7 @@ contexts:
 
   newSession:
     - match: '\bnewSession:'
-      scope: variable.parameter.zb
+      scope: variable.parameter.jaicp
       push:
         - match: ''
           push:
@@ -157,105 +157,105 @@ contexts:
     - include: special-pattern
     - match: '{{named_pattern}}'
       captures:
-        1: entity.name.class.zb
-        2: keyword.control.alias.zb
-        3: entity.name.class.zb
+        1: entity.name.class.jaicp
+        2: keyword.control.alias.jaicp
+        3: entity.name.class.jaicp
     - include: pattern-element
 
   special-pattern:
     - match: '(\$repeat)(<)'
       captures:
-        1: entity.name.constant.zb
-        2: punctuation.section.brackets.begin.zb
+        1: entity.name.constant.jaicp
+        2: punctuation.section.brackets.begin.jaicp
       push:
         - include: pattern
         - match: '>'
-          scope: punctuation.section.brackets.end.zb
+          scope: punctuation.section.brackets.end.jaicp
           pop: true
 
     - match: '(\$regexp)(<)'
       captures:
-        1: entity.name.constant.zb
-        2: punctuation.section.brackets.begin.zb
+        1: entity.name.constant.jaicp
+        2: punctuation.section.brackets.begin.jaicp
       embed: scope:source.regexp
       escape: '>'
       escape_captures:
-        0: punctuation.section.brackets.end.zb
+        0: punctuation.section.brackets.end.jaicp
 
     - match: '(\$weight)(<)'
       captures:
-        1: entity.name.constant.zb
-        2: punctuation.section.braces.begin.zb
+        1: entity.name.constant.jaicp
+        2: punctuation.section.braces.begin.jaicp
       push:
         - match: '(\d+(?:\.\d+)?)?([+-])?(\d+(?:\.\d+)?)'
           captures:
-            1: constant.numeric.float.zb
-            2: keyword.operator.arithmetic.zb
-            3: constant.numeric.float.zb
+            1: constant.numeric.float.jaicp
+            2: keyword.operator.arithmetic.jaicp
+            3: constant.numeric.float.jaicp
         - match: '[^>]'
-          scope: invalid.illegal.zb
+          scope: invalid.illegal.jaicp
         - match: '>'
-          scope: punctuation.section.brackets.end.zb
+          scope: punctuation.section.brackets.end.jaicp
           pop: true
 
     - match: '(\$entity|\$morph)(<)(.*?)(>)'
       captures:
-        1: entity.name.constant.zb
-        2: punctuation.section.brackets.begin.zb
-        3: string.other.zb
-        4: punctuation.section.brackets.end.zb
+        1: entity.name.constant.jaicp
+        2: punctuation.section.brackets.begin.jaicp
+        3: string.other.jaicp
+        4: punctuation.section.brackets.end.jaicp
 
     - match: '\$oneWord|\$nonEmptyGarbage'
-      scope: entity.name.constant.zb
+      scope: entity.name.constant.jaicp
 
   pattern-element:
     - match: '\('
-      scope: keyword.control.group.zb
+      scope: keyword.control.group.jaicp
       push:
         # This context has higher priority than the invalid one
         - match: '\)'
-          scope: keyword.control.group.zb
+          scope: keyword.control.group.jaicp
           pop: true
         - include: pattern
 
     # Hate to be repetitive, but otherwise different braces match each other
     - match: '\['
-      scope: keyword.control.optional-group.zb
+      scope: keyword.control.optional-group.jaicp
       push:
         - match: '\]'
-          scope: keyword.control.optional-group.zb
+          scope: keyword.control.optional-group.jaicp
           pop: true
         - include: pattern
 
     - match: '\{'
-      scope: keyword.control.permutation.zb
+      scope: keyword.control.permutation.jaicp
       push:
         - match: '\}'
-          scope: keyword.control.permutation.zb
+          scope: keyword.control.permutation.jaicp
           pop: true
         - include: pattern
 
     - match: '[\)\]\}]'
-      scope: invalid.illegal.unmatched-brace.zb
+      scope: invalid.illegal.unmatched-brace.jaicp
     - match: '(?<=\w)\*(?=\w)'
-      scope: invalid.illegal.inline-sequence.zb
+      scope: invalid.illegal.inline-sequence.jaicp
     - match: '(?<=[\(\[\{])[\|/]|[\|/](?=[\|/\)\]\}])'
-      scope: invalid.illegal.empty-alternant.zb
+      scope: invalid.illegal.empty-alternant.jaicp
 
     - match: '[\|/]'
-      scope: keyword.operator.alternation.zb
+      scope: keyword.operator.alternation.jaicp
     - match: '~'
-      scope: keyword.control.lemma.zb
+      scope: keyword.control.lemma.jaicp
     - match: '\*'
-      scope: keyword.control.sequence.zb
+      scope: keyword.control.sequence.jaicp
     - match: ':'
-      scope: keyword.control.mapping.zb
+      scope: keyword.control.mapping.jaicp
 
   param:
     - match: '(\w+)\s*(=)\s*'
       captures:
-        1: entity.other.inherited-class.zb
-        2: keyword.operator.assignment.zb
+        1: entity.other.inherited-class.jaicp
+        2: keyword.operator.assignment.jaicp
       push:
         - include: template
         - include: value
@@ -263,16 +263,16 @@ contexts:
           pop: true
 
     - match: ','
-      scope: keyword.other.zb
+      scope: keyword.other.jaicp
 
   template:
     - match: '{{'
-      scope: constant.character.zb
+      scope: constant.character.jaicp
       embed: scope:source.js#expression
-      embed_scope: constant.character.zb
+      embed_scope: constant.character.jaicp
       escape: '}}'
       escape_captures:
-        0: constant.character.zb
+        0: constant.character.jaicp
 
   value:
     - include: scope:source.js#constants
@@ -281,9 +281,9 @@ contexts:
 
   comment:
     - match: '\#'
-      scope: punctuation.definition.comment.zb
+      scope: punctuation.definition.comment.jaicp
       push:
-        - meta_scope: comment.line.number-sign.zb
+        - meta_scope: comment.line.number-sign.jaicp
         - match: '$\n?'
           pop: true
 
