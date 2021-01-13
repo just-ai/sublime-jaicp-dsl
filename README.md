@@ -4,10 +4,9 @@
 
 По сравнению с редактором, встроенным в платформу, он предоставляет ряд дополнительных возможностей:
 
-- Поддержка всех употребительных тегов JAICP DSL.
+- Расширенная подсветка тегов JAICP DSL.
 - Подсветка и частичная валидация элементов паттернов.
 - Подсветка скриптовых вставок на JS при помощи встроенной подсветки.
-- Комментирование кода через комбинацию клавиш `Ctrl` + `/`.
 
 ## Установка
 
@@ -22,10 +21,9 @@ This package provides syntax highlighting for JAICP DSL in [Sublime Text 3].
 
 Compared to the highlighter in the built-in editor, it features:
 
-- Support for all commonly used JAICP DSL tags.
+- Extended highlighting of JAICP DSL tags.
 - Highlighting and partial validation of pattern elements.
 - Embedding of the native JS syntax definition to highlight inline JS code.
-- Smart hotkeyed commenting via `Ctrl` + `/`.
 
 ## Installation
 
