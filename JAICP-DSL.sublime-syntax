@@ -20,7 +20,7 @@ contexts:
     - include: init
     - include: state
     - include: question
-    - match: '\b(eg?!?|intent!?):'
+    - match: '\b(eg?!?):'
       scope: storage.type.jaicp
     - match: '\b(else):'
       scope: variable.parameter.jaicp
@@ -79,7 +79,7 @@ contexts:
         - include: catchall
 
   question:
-    - match: '\b(q|event)!?:'
+    - match: '\b(q|event|intent)!?:'
       scope: storage.type.jaicp
       push:
         - match: '\|\|'
