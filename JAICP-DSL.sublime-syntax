@@ -6,7 +6,7 @@ file_extensions:
 scope: source.jaicp
 
 variables:
-  catchall: '(?=^\s*(?:a|buttons|eg?!?|else|elseif|event!?|go!?|image|if|init|inlineButtons|intent!?|newSession|patterns|q!?|random|require|script|state|theme|timeout):)'
+  catchall: '(?=^\s*(?:a|audio|buttons|eg?!?|else|elseif|event!?|go!?|image|if|init|inlineButtons|intent!?|newSession|patterns|q!?|random|require|script|state|theme|timeout):)'
   named_pattern: '([@$][\w\.]+)(?:(::)(\w+))?'
 
 contexts:
@@ -104,7 +104,7 @@ contexts:
       escape: '{{catchall}}'
 
   reaction:
-    - match: '\b(a|go!?):'
+    - match: '\b(a|audio|go!?):'
       scope: variable.parameter.jaicp
       push:
         # Tempting, but what if an actual comment immediately follows?
