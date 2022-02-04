@@ -275,7 +275,7 @@ contexts:
         0: constant.character.jaicp
 
   value:
-    - include: scope:source.js#constants
+    - include: scope:source.js#special-name
     - include: scope:source.js#literal-string
     - include: scope:source.js#object-literal
 
